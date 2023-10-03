@@ -1,0 +1,6 @@
+config:
+  Fleetbase-console:errorDocument: index.html
+  Fleetbase-console:indexDocument: index.html
+  Fleetbase-console:path: ../dist
+  aws:region: us-east-1
+  pulumi:template: static-website-aws-typescript
