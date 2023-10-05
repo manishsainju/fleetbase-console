@@ -110,5 +110,5 @@ module.exports = {
         textColor: ['responsive', 'hover', 'focus', 'dark', 'dark-hover', 'dark-active', 'dark-placeholder'],
         maxWidth: ['responsive', 'hover', 'focus'],
     },
-    plugins: [require('@tailwindcss/forms')],
+    plugins: [require('postcss-import'), require('tailwindcss/nesting')(require('postcss-nesting')), require('@tailwindcss/forms')],
 };

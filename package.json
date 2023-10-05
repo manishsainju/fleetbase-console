@@ -25,21 +25,21 @@
     },
     "dependencies": {
         "@ember/legacy-built-in-components": "^0.4.1",
+        "@fleetbase/dev-engine": "^0.1.8",
         "@fleetbase/ember-core": "^0.1.3",
         "@fleetbase/ember-ui": "^0.1.9",
-        "@fleetbase/dev-engine": "^0.1.8",
-        "@fleetbase/iam-engine": "^0.0.6",
-        "@fleetbase/fleetops-engine": "^0.2.4",
         "@fleetbase/fleetops-data": "^0.1.0",
-        "@fleetbase/storefront-engine": "^0.1.7",
+        "@fleetbase/fleetops-engine": "^0.2.4",
+        "@fleetbase/iam-engine": "^0.0.6",
         "@fleetbase/leaflet-routing-machine": "^3.2.16",
+        "@fleetbase/storefront-engine": "^0.1.7",
         "@fortawesome/ember-fontawesome": "^0.4.1",
-        "ember-intl": "^6.0.0-beta.6",
         "ember-changeset": "^4.1.2",
         "ember-changeset-validations": "^4.1.1",
         "ember-composable-helpers": "^5.0.0",
         "ember-concurrency": "^3.0.0",
         "ember-concurrency-decorators": "^2.0.3",
+        "ember-intl": "^6.0.0-beta.6",
         "ember-math-helpers": "^2.18.2",
         "ember-power-select": "^6.0.1",
         "ember-prism": "^0.13.0",
@@ -128,6 +128,10 @@
             "@fleetbase/fleetops-data": "0.1.0",
             "@fleetbase/ember-core": "^0.1.3",
             "@fleetbase/ember-ui": "^0.1.9"
+        },
+        "patchedDependencies": {
+            "@fleetbase/fleetops-engine@0.2.4": "patches/@fleetbase__fleetops-engine@0.2.4.patch",
+            "@fleetbase/ember-core@0.1.3": "patches/@fleetbase__ember-core@0.1.3.patch"
         }
     },
     "prettier": {

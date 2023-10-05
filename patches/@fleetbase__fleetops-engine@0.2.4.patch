@@ -1,0 +1,105 @@
+diff --git a/addon/components/live-map.hbs b/addon/components/live-map.hbs
+index 1e2f844797f5a1f7d06fb627ab87ccf25e5b4d93..08a8a0dca00d14b3ffc8dc522fed6aca60f852d8 100644
+--- a/addon/components/live-map.hbs
++++ b/addon/components/live-map.hbs
+@@ -4,7 +4,7 @@
+ 
+         {{#if this.isDriversVisible}}
+             {{#each this.drivers as |driver|}}
+-                <layers.drift-marker @rotationAngle={{driver.heading}} @duration={{300}} @icon={{icon iconUrl=driver.vehicle_avatar iconSize=(array 24 24)}} @location={{point-to-coordinates driver.location}} @publicId={{driver.public_id}} @onAdd={{fn this.onAction "onDriverAdded" driver}} as |marker|>
++                <layers.drift-marker @rotationAngle={{driver.heading}} @duration={{300}} @icon={{icon iconUrl=driver.vehicle_avatar iconSize=(array 32 32)}} @location={{point-to-coordinates driver.location}} @publicId={{driver.public_id}} @onAdd={{fn this.onAction "onDriverAdded" driver}} as |marker|>
+                     <marker.popup @maxWidth="500" @minWidth="225">
+                         <DriverCard @driver={{driver}} @showCoordinates={{true}} @textClass="text-gray-900 dark:text-gray-100" />
+                     </marker.popup>
+diff --git a/addon/components/live-map.js b/addon/components/live-map.js
+index 5ff4a833517fb32b0cd7450aa1cbdd6b54efc558..4a7ed02998a5965c17fbbe75939ba08c79c9669f 100644
+--- a/addon/components/live-map.js
++++ b/addon/components/live-map.js
+@@ -10,8 +10,8 @@ import { guidFor } from '@ember/object/internals';
+ import { later } from '@ember/runloop';
+ import { allSettled } from 'rsvp';
+ 
+-const DEFAULT_LATITUDE = 1.369;
+-const DEFAULT_LONGITUDE = 103.8864;
++const DEFAULT_LATITUDE = 29.3375;
++const DEFAULT_LONGITUDE = 47.65;
+ 
+ export default class LiveMapComponent extends Component {
+     @service store;
+@@ -60,7 +60,10 @@ export default class LiveMapComponent extends Component {
+             return 'https://{s}.tile.jawg.io/jawg-matrix/{z}/{x}/{y}{r}.png?access-token=';
+         }
+ 
+-        return tileSourceUrl ?? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
++        return (
++            tileSourceUrl ??
++            'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=sk.eyJ1IjoibWFuaXNoc2Fpbmp1IiwiYSI6ImNsa2M0MTkzYjBva3YzZG13bDZnbndmenQifQ.Pu1ml0Rzl6_1vksMskI1Fw'
++        );
+     }
+ 
+     /**
+diff --git a/addon/components/modals/point-map.hbs b/addon/components/modals/point-map.hbs
+index 183f66b9123c5b1467c8566220a76edcb761f4c3..56f2fd135781605112991b31088a8f779d45fe31 100644
+--- a/addon/components/modals/point-map.hbs
++++ b/addon/components/modals/point-map.hbs
+@@ -1,7 +1,7 @@
+ <Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+     <div class="modal-body-container">
+-        <LeafletMap class="rounded-md shadow-md map-height-base" @lat={{@options.latitude}} @lng={{@options.longitude}} @zoom={{12}} as |layers|>
+-            <layers.tile @url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
++        <LeafletMap class="rounded-md shadow-md map-height-base" @lat={{@options.longitude}} @lng={{@options.latitude}} @zoom={{13}} as |layers|>
++            <layers.tile @url="https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=sk.eyJ1IjoibWFuaXNoc2Fpbmp1IiwiYSI6ImNsa2M0MTkzYjBva3YzZG13bDZnbndmenQifQ.Pu1ml0Rzl6_1vksMskI1Fw" />
+ 
+             <layers.marker @icon={{@options.icon}} @location={{point-to-coordinates @options.location}} as |marker|>
+                 <marker.popup @maxWidth="500" @minWidth="180">
+diff --git a/addon/components/modals/point-map.js b/addon/components/modals/point-map.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..eecf2c5df0d3d82596c54ddcf2662ac2d98715bb
+--- /dev/null
++++ b/addon/components/modals/point-map.js
+@@ -0,0 +1,31 @@
++import Component from '@glimmer/component';
++import { action, set } from '@ember/object';
++import { tracked } from '@glimmer/tracking';
++import { later } from '@ember/runloop';
++
++export default class PointMap extends Component {
++    @tracked leafletMap;
++
++    @action setMapReference(event) {
++        if (!event || !event.target) {
++            return;
++        }
++
++        const { target } = event;
++        this.leafletMap = target;
++
++        set(event, 'target.pointMap', this);
++
++        if (typeof this.args.onLoad === 'function') {
++            this.args.onLoad(...arguments);
++        }
++
++        later(
++            this,
++            () => {
++                this.leafletMap.invalidateSize();
++            },
++            100
++        );
++    }
++}
+\ No newline at end of file
+diff --git a/addon/helpers/point-to-coordinates.js b/addon/helpers/point-to-coordinates.js
+index f1cfd00646082c99940d741c059d7bfccb45dadf..75438d4c4527d524bda687c9b6096df199763341 100644
+--- a/addon/helpers/point-to-coordinates.js
++++ b/addon/helpers/point-to-coordinates.js
+@@ -2,7 +2,7 @@ import { helper } from '@ember/component/helper';
+ import extractCoordinates from '../utils/extract-coordinates';
+ 
+ export default helper(function pointToCoordinates([point, format = 'array']) {
+-    const [latitude, longitude] = extractCoordinates(point?.coordinates);
++    const [latitude, longitude] = extractCoordinates(point?.coordinates); 
+ 
+     if (format === 'array') {
+         return [latitude, longitude];

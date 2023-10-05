@@ -1,0 +1,13 @@
+diff --git a/addon/utils/extract-coordinates.js b/addon/utils/extract-coordinates.js
+index efc8bfcc23b58ce6d97fe64187474e9512878832..42834954fa577825314f575f7ff14a24825c2253 100644
+--- a/addon/utils/extract-coordinates.js
++++ b/addon/utils/extract-coordinates.js
+@@ -1,7 +1,7 @@
+ import isLatitude from './is-latitude';
+ import isLongitude from './is-longitude';
+ 
+-export default function extractCoordinates(coordinates = [], format = 'latlng') {
++export default function extractCoordinates(coordinates = [], format = 'latlng')  {
+     let latitude = null,
+         longitude = null;
+ 
